@@ -1,7 +1,9 @@
-package com.pacteratest.news;
+package com.pacteratest.news.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.pacteratest.news.R;
 
 public class NewsActivity extends AppCompatActivity {
 
