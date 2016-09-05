@@ -3,6 +3,7 @@ package com.pacteratest.news.utils;
 /**
  * Created by yungang wu on 16/9/5.
  * Constants used within this apps are defined here.
+ *
  */
 public class NewsConstants {
     //package log indicator.
