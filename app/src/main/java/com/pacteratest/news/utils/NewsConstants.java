@@ -12,4 +12,7 @@ public class NewsConstants {
     public final static String NEWS_DATA_URL = "https://dl.dropboxusercontent.com//facts.json";
     public final static String APIKEY = "746330";
     public final static String NEWSDATA_JSON_FILE_NAME = "facts.json";
+    //config the connection time out values
+    public final static int CONNECTION_TIMEOUT = 3000;  //3 seconds
+    public final static int HTTP_READ_TIMEOUT = 3000; //3 second
 }

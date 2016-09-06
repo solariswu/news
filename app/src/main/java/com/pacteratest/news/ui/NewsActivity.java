@@ -17,7 +17,6 @@ import com.pacteratest.news.services.RetrofitService;
 import com.pacteratest.news.utils.NewsConstants;
 import com.pacteratest.news.utils.RetrofitManager;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -88,8 +87,7 @@ public class NewsActivity extends AppCompatActivity {
             //remove all null data items
             removeAllNullNewsData(list);
             //set Adapater
-            lvNews.setAdapter(new NewsItemAdapter(this,
-                    list.toArray(new NewsRowData[list.size()])));
+            lvNews.setAdapter(new NewsItemAdapter(this, list, lvNews));
         }
     }
 

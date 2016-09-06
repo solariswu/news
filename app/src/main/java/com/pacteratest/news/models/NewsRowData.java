@@ -14,9 +14,9 @@ public class NewsRowData {
     private String description;
     @SerializedName("imageHref")
     @Expose
-    private Object imageHref;
+    private String imageHref;
 
-    public NewsRowData (String title, String description, Object imageHref) {
+    public NewsRowData (String title, String description, String imageHref) {
         this.title = title;
         this.description = description;
         this.imageHref = imageHref;
@@ -28,7 +28,10 @@ public class NewsRowData {
      *     The title
      */
     public String getTitle() {
-        return title;
+        if (null != title) {
+            return title.trim();
+        }
+        return null;
     }
 
     /**
@@ -46,7 +49,10 @@ public class NewsRowData {
      *     The description
      */
     public String getDescription() {
-        return description;
+        if (null != description) {
+            return description.trim();
+        }
+        return null;
     }
 
     /**
@@ -63,17 +69,13 @@ public class NewsRowData {
      * @return
      *     The imageHref
      */
-    public Object getImageHref() {
-        return imageHref;
-    }
+    public String getImageHref() { return imageHref; }
 
     /**
      * 
      * @param imageHref
      *     The imageHref
      */
-    public void setImageHref(Object imageHref) {
-        this.imageHref = imageHref;
-    }
+    public void setImageHref(String imageHref) { this.imageHref = imageHref; }
 
 }
