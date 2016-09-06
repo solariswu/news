@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
@@ -24,15 +26,24 @@ import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class NewsActivity extends AppCompatActivity {
+public class NewsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private NewsData mNewsData;
     private final static String ACTION_NEWS_DATA_NOTIFY = "ACTION_NEWS_DATA_NOTIFY";
     private BroadcastReceiver mReceiver;
+    private SwipeRefreshLayout mSwipeLayout;
+    private List<NewsRowData> mList;
+    private NewsItemAdapter mNewsItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
+
+        //set refresh listener
+        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        if (null!= mSwipeLayout) {
+            mSwipeLayout.setOnRefreshListener(this);
+        }
 
         // create receiver to get news data update
         mReceiver = new BroadcastReceiver() {
@@ -42,7 +53,22 @@ public class NewsActivity extends AppCompatActivity {
 
                 if (intentAction.equals(NewsActivity.ACTION_NEWS_DATA_NOTIFY) &&
                         null != mNewsData) {
-                    updateNewsUI(mNewsData);
+
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            System.out.println(Thread.currentThread().getId());
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    updateNewsUI(mNewsData);
+                                }
+                            });
+                        }
+
+                    }).start();
                 }
             }
         };
@@ -57,6 +83,27 @@ public class NewsActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(mReceiver);
     }
+
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new onRequestNewsData().execute();
+            }
+        }, 500);
+
+        /*
+        不用延迟可以直接像下面这样写
+         */
+        /*
+        *  list.clear();
+                 addItems();
+                 adapter.notifyDataSetChanged();
+                 swipeContainer.setRefreshing(false);
+                 */
+    }
+
 
     // remove the items in list whose datas are all null
     private static List<NewsRowData> removeAllNullNewsData (List<NewsRowData> newsRowDatas) {
@@ -83,11 +130,14 @@ public class NewsActivity extends AppCompatActivity {
         // set daily view list
         ListView lvNews = (ListView) findViewById(R.id.lvNewsList);
         if (null != lvNews) {
-            List<NewsRowData> list = newsData.getRows();
+            mList = newsData.getRows();
             //remove all null data items
-            removeAllNullNewsData(list);
+            removeAllNullNewsData(mList);
+
+            mNewsItemAdapter = new NewsItemAdapter(this, mList, lvNews);
             //set Adapater
-            lvNews.setAdapter(new NewsItemAdapter(this, list, lvNews));
+            lvNews.setAdapter(mNewsItemAdapter);
+
         }
     }
 
@@ -120,6 +170,7 @@ public class NewsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Long result) {
+            mSwipeLayout.setRefreshing(false);
         }
 
         @Override
