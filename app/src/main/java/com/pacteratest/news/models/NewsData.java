@@ -13,7 +13,7 @@ public class NewsData {
     private String title;
     @SerializedName("rows")
     @Expose
-    private List<Row> rows = new ArrayList<>();
+    private List<NewsRowData> newsRowDatas = new ArrayList<>();
 
     /**
      * 
@@ -38,17 +38,17 @@ public class NewsData {
      * @return
      *     The rows
      */
-    public List<Row> getRows() {
-        return rows;
+    public List<NewsRowData> getRows() {
+        return newsRowDatas;
     }
 
     /**
      * 
-     * @param rows
-     *     The rows
+     * @param newsRowDatas
+     *     The newsRowDatas
      */
-    public void setRows(List<Row> rows) {
-        this.rows = rows;
+    public void setRows(List<NewsRowData> newsRowDatas) {
+        this.newsRowDatas = newsRowDatas;
     }
 
 }

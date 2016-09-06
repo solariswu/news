@@ -4,7 +4,7 @@ package com.pacteratest.news.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Row {
+public class NewsRowData {
 
     @SerializedName("title")
     @Expose
@@ -15,6 +15,12 @@ public class Row {
     @SerializedName("imageHref")
     @Expose
     private Object imageHref;
+
+    public NewsRowData (String title, String description, Object imageHref) {
+        this.title = title;
+        this.description = description;
+        this.imageHref = imageHref;
+    }
 
     /**
      * 

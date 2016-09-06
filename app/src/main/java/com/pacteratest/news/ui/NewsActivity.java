@@ -7,12 +7,19 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ListView;
 
 import com.pacteratest.news.R;
+import com.pacteratest.news.adapters.NewsItemAdapter;
 import com.pacteratest.news.models.NewsData;
+import com.pacteratest.news.models.NewsRowData;
 import com.pacteratest.news.services.RetrofitService;
 import com.pacteratest.news.utils.NewsConstants;
 import com.pacteratest.news.utils.RetrofitManager;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.Response;
@@ -20,7 +27,7 @@ import retrofit.Retrofit;
 
 public class NewsActivity extends AppCompatActivity {
     private NewsData mNewsData;
-    private final String ACTION_NEWS_DATA_NOTIFY = "news data";
+    private final static String ACTION_NEWS_DATA_NOTIFY = "ACTION_NEWS_DATA_NOTIFY";
     private BroadcastReceiver mReceiver;
 
     @Override
@@ -28,7 +35,7 @@ public class NewsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
-        // create receiver to get weather data update
+        // create receiver to get news data update
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -42,6 +49,8 @@ public class NewsActivity extends AppCompatActivity {
         };
 
         registerReceiver(mReceiver, new IntentFilter(NewsActivity.ACTION_NEWS_DATA_NOTIFY));
+
+        new onRequestNewsData().execute();
     }
 
     @Override
@@ -50,7 +59,38 @@ public class NewsActivity extends AppCompatActivity {
         unregisterReceiver(mReceiver);
     }
 
+    // remove the items in list whose datas are all null
+    private static List<NewsRowData> removeAllNullNewsData (List<NewsRowData> newsRowDatas) {
+
+        if (newsRowDatas == null) {
+            return null;
+        }
+        Iterator<?> iterator = newsRowDatas.iterator();
+        while (iterator.hasNext()) {
+            NewsRowData newsRowData = (NewsRowData) iterator.next();
+            if (null == newsRowData.getDescription() &&
+                    null == newsRowData.getImageHref() &&
+                    null == newsRowData.getTitle()) {
+                iterator.remove();
+            }
+        }
+        return newsRowDatas;
+    }
+
     private void updateNewsUI(NewsData newsData) {
+        //set action bar title
+        setTitle(newsData.getTitle());
+
+        // set daily view list
+        ListView lvNews = (ListView) findViewById(R.id.lvNewsList);
+        if (null != lvNews) {
+            List<NewsRowData> list = newsData.getRows();
+            //remove all null data items
+            removeAllNullNewsData(list);
+            //set Adapater
+            lvNews.setAdapter(new NewsItemAdapter(this,
+                    list.toArray(new NewsRowData[list.size()])));
+        }
     }
 
     private class onRequestNewsData extends AsyncTask<String, Void, Long> {
