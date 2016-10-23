@@ -14,10 +14,15 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 
+import com.pacteratest.news.R;
 import com.pacteratest.news.utils.NewsConstants;
 
 /**
@@ -30,12 +35,14 @@ public class ImageLoader {
     private LruCache<String, Bitmap> mMemoryCaches;
     private Set<NewsAsyncTask> mTasks;
     private ListView mListView;
+    private int mWidthPixels;
 
     public String mUrls[];
 
-    public ImageLoader(ListView listView) {
+    public ImageLoader(ListView listView, int widthPixels) {
 
         this.mListView = listView;
+        this.mWidthPixels = widthPixels;
 
         mTasks = new HashSet<>();
 
@@ -69,10 +76,13 @@ public class ImageLoader {
         for (int i = start; i < end; i++) {
             String loadUrl = mUrls[i];
             if (null != loadUrl) {
-                if (getBitmapFromLrucache(loadUrl) != null) {
+                Bitmap bitmap = getBitmapFromLrucache(loadUrl);
+                if (bitmap != null) {
                     ImageView imageView = (ImageView) mListView
                             .findViewWithTag(loadUrl);
-                    imageView.setImageBitmap(getBitmapFromLrucache(loadUrl));
+                    adjustImageViewWidth(bitmap.getWidth());
+                    imageView.setImageBitmap(bitmap);
+                    ((BaseAdapter) mListView.getAdapter()).notifyDataSetChanged();
                 } else {
                     NewsAsyncTask mNewsAsyncTask = new NewsAsyncTask(loadUrl);
                     mTasks.add(mNewsAsyncTask);
@@ -82,13 +92,29 @@ public class ImageLoader {
         }
     }
 
+    public void adjustImageViewWidth (int bitmapWidth) {
+        View newsDescView = mListView.findViewById(R.id.tvNewsDesc);
+
+        //calculate the description view width, reduce it if it is too wide
+        LinearLayout.LayoutParams descParams=(LinearLayout.LayoutParams)newsDescView.getLayoutParams();
+
+        Log.i (NewsConstants.LOG, "screen width:"+mWidthPixels+" descWidth:"+descParams.width+
+                " bitmapWidth:"+bitmapWidth);
+
+        descParams.width = mWidthPixels - bitmapWidth - 5;
+        newsDescView.setLayoutParams(descParams);
+
+    }
+
     public void showImage(ImageView imageView, String url) {
 
         //try to get image from cache
         Bitmap bitmap = getBitmapFromLrucache(url);
         if (bitmap != null) {
             //image exists in cache, using it to fill the image view
+            adjustImageViewWidth(bitmap.getWidth());
             imageView.setImageBitmap(bitmap);
+            ((BaseAdapter) mListView.getAdapter()).notifyDataSetChanged();
         }
         //otherwise the image will be updated in the async-task callback
     }
@@ -170,7 +196,9 @@ public class ImageLoader {
                 ImageView imageView = (ImageView) mListView.findViewWithTag(mUrl);
 
                 if (bitmap != null && imageView != null) {
+                    adjustImageViewWidth(bitmap.getWidth());
                     imageView.setImageBitmap(bitmap);
+                    ((BaseAdapter) mListView.getAdapter()).notifyDataSetChanged();
                 }
                 mTasks.remove(this);
             }
@@ -178,5 +206,6 @@ public class ImageLoader {
         }
 
     }
+
 
 }

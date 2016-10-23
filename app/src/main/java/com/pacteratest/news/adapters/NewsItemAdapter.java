@@ -1,11 +1,14 @@
 package com.pacteratest.news.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import java.util.List;
 
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
@@ -38,9 +41,15 @@ public class NewsItemAdapter extends BaseAdapter implements OnScrollListener{
 
         mList=data;
         mInflater=LayoutInflater.from(context);
+
         isFirstIn = true;
 
-        imageLoader=new ImageLoader(listView);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager wm = ((Activity)context).getWindowManager();
+        wm.getDefaultDisplay().getMetrics(dm);
+
+        imageLoader=new ImageLoader(listView, dm.widthPixels);
         imageLoader.mUrls = new String[mList.size()];
         for(int i=0;i<mList.size();i++){
             imageLoader.mUrls[i] = mList.get(i).getImageHref();

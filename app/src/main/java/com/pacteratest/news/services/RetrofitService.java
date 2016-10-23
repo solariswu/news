@@ -3,22 +3,23 @@ package com.pacteratest.news.services;
 
 import com.pacteratest.news.models.NewsData;
 
-import retrofit.Call;
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import rx.Observable;
+
 
 /**
- * Created by yungang wu on 05/9/16.
+ * Created by solariswu on 05/9/16.
  *
  */
 
 /**
- * Provides the interface for {@link retrofit.Retrofit} describing the endpoints and responses
+ * Provides the interface for {@link retrofit2.Retrofit} describing the endpoints and responses
  * for the endpoints.
  */
 
 public interface RetrofitService {
 
     @GET("/u/{APIKEY}/{JSONFILE}")
-    Call<NewsData> getNewsData(@Path("APIKEY") String apikey, @Path("JSONFILE") String jsonFile);
+    Observable<NewsData> getNewsData(@Path("APIKEY") String apikey, @Path("JSONFILE") String jsonFile);
 }

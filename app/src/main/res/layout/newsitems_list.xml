@@ -19,7 +19,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="top"
-            android:layout_marginRight="2dp"
             android:textSize="@dimen/news_description_text_size"
             android:text="@string/loading_description" />
         <TextView
@@ -31,7 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:foregroundGravity="top"
             android:contentDescription="@string/news_image"/>
 
     </LinearLayout>
